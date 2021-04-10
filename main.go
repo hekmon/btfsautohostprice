@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
 
 	"github.com/hekmon/btfsautohostprice/coinmarketcap"
 )
@@ -57,4 +58,10 @@ func main() {
 		log.Fatalf("can not find BTT id %d within the %d returned quotes", BTTID, len(quotes.Quote))
 	}
 	fmt.Printf("%f $ is worth of %f BTT at %v\n", dollars, bttquote.Price, bttquote.LastUpdated)
+	fmt.Printf("as a user push 3 times the amount of data on the network for redundancy, if we want a user to be able to store 1TB for a month for %f$\n", dollars)
+	fmt.Printf("we need to set the host price for 1TB/month at %f BTT, this amount of BTT is equivalent to the value %d for the BTFS API\n", bttquote.Price/3, BTFSPriceConvert(bttquote.Price/3))
+}
+
+func BTFSPriceConvert(tokens float64) (param int) {
+	return int(math.Round(1e6 * tokens / 30 / 1024))
 }
