@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -31,22 +30,26 @@ var (
 func main() {
 	// Get env
 	if coinmarketcapAPIKey = os.Getenv(apiKeyEnvVarName); coinmarketcapAPIKey == "" {
-		log.Fatalf("coinmarketcap API Key must be provided thru %s env var\n", apiKeyEnvVarName)
+		fmt.Printf("coinmarketcap API Key must be provided thru %s env var\n", apiKeyEnvVarName)
+		os.Exit(1)
 	}
 	if tmp := os.Getenv(BTFSTargetEnvVarName); tmp != "" {
 		if _, err := url.Parse(tmp); err != nil {
-			log.Fatalf("%s value is invalid: %s\n", BTFSTargetEnvVarName, err)
+			fmt.Printf("%s value is invalid: %s\n", BTFSTargetEnvVarName, err)
+			os.Exit(1)
 		}
 		btfsTarget = tmp
 	} else {
-		log.Printf("no custom BTFS API target set thru %s env var, using default: %s\n", BTFSTargetEnvVarName, btfsTarget)
+		fmt.Printf("no custom BTFS API target set thru %s env var, using default: %s\n", BTFSTargetEnvVarName, btfsTarget)
 	}
 	if tmp := os.Getenv(amountEnvVarName); tmp == "" {
-		log.Fatalf("%s env var must be set\n", amountEnvVarName)
+		fmt.Printf("%s env var must be set\n", amountEnvVarName)
+		os.Exit(1)
 	} else {
 		var err error
 		if amount, err = strconv.ParseFloat(tmp, 64); err != nil {
-			log.Fatalf("amount can not be converted to float64: %s\n", err)
+			fmt.Printf("amount can not be converted to float64: %s\n", err)
+			os.Exit(1)
 		}
 	}
 
@@ -58,11 +61,13 @@ func main() {
 		ConvertIDs: []int{BTTID},
 	})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(2)
 	}
 	bttquote, found := quotes.Quote[BTTID]
 	if !found {
-		log.Fatalf("can not find BTT id %d within the %d returned quotes", BTTID, len(quotes.Quote))
+		fmt.Printf("can not find BTT id %d within the %d returned quotes\n", BTTID, len(quotes.Quote))
+		os.Exit(2)
 	}
 	fmt.Printf("%f $ is worth of %f BTT at %v\n", amount, bttquote.Price, bttquote.LastUpdated)
 	fmt.Printf("as a user push 3 times the amount of data on the network for redundancy, if we want a user to be able to store 1TB for a month for %f$\n", amount)
@@ -70,8 +75,10 @@ func main() {
 
 	// Update host
 	if err = UpdateHostPrice(bttquote.Price / 3); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(2)
 	}
+	fmt.Println("host pricing updated")
 }
 
 func UpdateHostPrice(tokens float64) (err error) {
