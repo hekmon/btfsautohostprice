@@ -69,12 +69,13 @@ func main() {
 		fmt.Printf("can not find BTT id %d within the %d returned quotes\n", BTTID, len(quotes.Quote))
 		os.Exit(2)
 	}
+	hostPrice := bttquote.Price / 3
 	fmt.Printf("%f $ is worth of %f BTT at %v\n", amount, bttquote.Price, bttquote.LastUpdated)
 	fmt.Printf("as a user push 3 times the amount of data on the network for redundancy, if we want a user to be able to store 1TB for a month for %f$\n", amount)
-	fmt.Printf("we need to set the host price for 1TB/month at %f BTT, this amount of BTT is equivalent to the value %d for the BTFS API\n", bttquote.Price/3, BTFSPriceConvert(bttquote.Price/3))
+	fmt.Printf("we need to set the host price for 1TB/month at %f BTT, this amount of BTT is equivalent to the value %d for the BTFS API\n", hostPrice, BTFSPriceConvert(hostPrice))
 
 	// Update host
-	if err = UpdateHostPrice(bttquote.Price / 3); err != nil {
+	if err = UpdateHostPrice(hostPrice); err != nil {
 		fmt.Println(err)
 		os.Exit(2)
 	}
