@@ -1,0 +1,10 @@
+[Unit]
+Description=Update btfs host price daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=900
+
+[Install]
+WantedBy=timers.target

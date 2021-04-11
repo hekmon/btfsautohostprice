@@ -1,0 +1,15 @@
+[Unit]
+Description=BTFS automatic host price update
+After=network-online.target btfs.service
+Requires=btfs.service
+
+[Service]
+Type=oneshot
+User=btfsautohostprice
+EnvironmentFile=/etc/default/btfsautohostprice
+ExecStart=/usr/local/bin/btfsautohostprice
+NoNewPrivileges=true
+ProtectSystem=true
+
+[Install]
+WantedBy=multi-user.target
